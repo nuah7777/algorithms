@@ -1,81 +1,72 @@
-# URL Shortener Specification
+# URL 단축 서비스 명세 초안
 
-## 1. Scope
+## 1. 목표와 범위
 
-The project provides base62 conversion, a URL shortener backed by a
-collision-resolving hash table, command-line tests, and a small inspection
-web page. Hash table keys are strings. The initial implementation uses
-separate chaining; a later implementation adds linear probing with the same
-public operations.
+사용자가 긴 URL을 입력하면 짧은 코드를 발급하고, 그 코드로 원래 URL을
+조회할 수 있는 서비스를 만든다. URL과 코드의 저장·조회에는 프로젝트가
+직접 구현한 해시 테이블을 사용한다. 해시 테이블은 개별 체이닝으로 충돌을
+처리하고 호너 방식으로 키의 해시값을 계산한다.
 
-## 2. Base62
+## 2. base62 코드
 
-- The alphabet is `0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz`.
-- `encode(number)` accepts a non-negative integer and returns its base62 form.
-- Zero is encoded as `"0"`.
-- Negative numbers raise `ValueError`.
-- `decode(value)` accepts a non-empty string containing only alphabet
-  characters and returns the represented non-negative integer.
-- An empty string or a character outside the alphabet raises `ValueError`.
-- For every supported integer `n`, `decode(encode(n)) == n`.
+- 사용할 숫자 문자는 `0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz`이다.
+- 0 이상의 정수를 base62 문자열로 인코딩하고, base62 문자열을 정수로
+  디코딩할 수 있어야 한다.
+- `encode(0)`의 결과는 `"0"`이어야 한다.
+- 음수 인코딩, 빈 문자열 디코딩, 알파벳에 없는 문자의 디코딩은
+  `ValueError`로 실패해야 한다.
+- 유효한 모든 정수 `n`에 대해 `decode(encode(n)) == n`이어야 한다.
 
-## 3. Hash table
+## 3. 해시 테이블
 
-`HashTable(capacity=10)` requires a positive integer capacity. It exposes:
+해시 테이블은 양의 정수 버킷 수로 생성한다. 버킷 수가 0 이하이거나 정수가
+아니면 `ValueError`를 발생시킨다.
 
-- `insert(key, value)`: add a string key, replacing the value when the key is
-  already present.
-- `get(key)`: return the value for a present key, otherwise `None`.
-- `len(table)`: number of distinct keys.
-- `hash_details(key)`: return the bucket index and the Horner-calculation
-  steps for inspection.
-- `inspect()`: return an immutable slot-ordered snapshot; each slot contains
-  an immutable sequence of `(key, value)` pairs.
+- `insert(key, value)`는 문자열 키와 값을 저장한다. 이미 존재하는 키라면
+  새 값을 저장하며 항목 수는 늘어나지 않는다.
+- `get(key)`는 저장된 값을 반환하고, 키가 없으면 `None`을 반환한다.
+- `len(table)`은 서로 다른 키의 수를 반환한다.
+- `inspect()`는 버킷 순서대로 각 버킷의 키-값 항목을 확인할 수 있는
+  읽기 전용 결과를 반환한다.
+- 키의 호너 계산은 `h = 0`에서 시작해 각 문자 `c`에 대해
+  `h = (31 * h + ord(c)) % 버킷_수`를 적용한다. 빈 문자열의 해시 버킷은
+  0이다.
+- 같은 버킷으로 해시되는 서로 다른 키는 연결 리스트에 함께 저장하고,
+  각각 조회할 수 있어야 한다.
+- 해시 계산 과정과 최종 버킷 번호를 조회할 수 있어야 한다.
+- 구현은 Python 내장 `dict`, `set`, `hash()`를 사용하지 않는다.
+- 테이블은 '원소 수 / 칸 수'가 2를 넘으면 두 배로 키운다.
 
-Hashing starts at zero and processes each Unicode code point `c` as
-`h = (31 * h + ord(c)) % capacity`. The empty string hashes to bucket zero.
-The first implementation stores colliding keys in a linked list per bucket.
-The linear-probing implementation uses the same hash calculation and public
-operations; insertion into a full table raises `OverflowError`. Both
-implementations update an existing key instead of adding a duplicate.
+## 4. URL 단축 및 조회
 
-The source implementation must not use `dict`, `set`, or Python's built-in
-`hash()`.
+- `shorten(url)`은 절대 URL을 받아 짧은 코드를 반환한다.
+- 허용하는 URL은 호스트가 있는 `http` 또는 `https` URL이다. 상대 경로,
+  다른 스킴, 호스트가 없는 URL은 `ValueError`로 거부한다.
+- 같은 URL을 다시 단축하면 처음 발급한 코드와 같은 코드를 반환한다.
+- 코드는 0부터 증가하는 정수 순번을 base62로 인코딩해 만든다. URL의
+  해시값을 코드로 사용하지 않는다.
+- `resolve(code)`는 코드에 해당하는 원본 URL을 반환한다. 알 수 없는
+  코드는 `KeyError`로 알린다.
+- URL에서 코드로, 코드에서 URL로 양방향 조회가 가능해야 하며 저장에는
+  직접 구현한 개별 체이닝 해시 테이블만 사용한다.
 
-## 4. URL shortener
+## 5. 테이블 확인 화면
 
-`Shortener(table_kind="chaining", capacity=10)` uses the requested table
-implementation (`"chaining"` or, when available, `"linear"`).
+`/table` 화면은 버킷별 저장 항목과 연결 리스트의 순서를 보여 준다. 조회할
+키를 지정하면 호너 해시 계산 단계, 최종 버킷, 해당 항목을 찾기 위해 방문한
+버킷과 연결 리스트 항목을 함께 확인할 수 있어야 한다.
 
-- `shorten(url)` accepts an absolute `http` or `https` URL with a host and
-  returns a base62 code.
-- Re-shortening the same URL returns its original code.
-- Codes are assigned from a monotonically increasing integer sequence and
-  encoded with base62; a hash value is never used as a code.
-- `resolve(code)` returns the original URL.
-- Invalid URLs raise `ValueError`; an unknown code raises `KeyError`.
-- The shortener accepts at most `capacity` distinct URLs and raises
-  `OverflowError` when full rather than silently replacing an entry.
+## 6. 경계 사례
 
-## 5. Inspection page and experiments
-
-`/table` shows each slot and its stored chain or probe entry. For a queried
-key, it shows the Horner hash steps and the slots examined to retrieve it.
-The experiment compares measured average search costs at load factors 0.1
-through 0.9 with theoretical estimates, using identical keys and capacities
-for both collision strategies.
-
-## 6. Required boundary cases
-
-1. `encode(0)` is `"0"` and zero round-trips through decode.
-2. Base62 conversion handles values larger than one digit and rejects
-   negative input, empty encoded input, and invalid alphabet characters.
-3. Hash-table capacity zero is rejected; capacity one works.
-4. Empty string keys hash to zero and can be retrieved.
-5. Two different keys that hash to the same bucket remain independently
-   retrievable; inserting an existing key updates it without changing length.
-6. Missing keys return `None`; inspecting an empty table returns empty slots.
-7. A capacity-one linear-probing table accepts one entry, wraps from its last
-   slot to slot zero when probing, and raises `OverflowError` when full.
-8. URL validation rejects relative URLs, unsupported schemes, and missing
-   hosts. Duplicate URLs reuse their code, and unknown codes raise `KeyError`.
+1. `encode(0)`은 `"0"`이며 0과 여러 자리 정수 모두 인코딩·디코딩 왕복이
+   가능하다.
+2. 음수, 빈 base62 문자열, 잘못된 base62 문자는 거부한다.
+3. 유효하지 않은 해시 테이블 용량은 거부하고, 용량 1인 테이블은 동작한다.
+4. 빈 문자열 키는 버킷 0에 저장하고 다시 조회할 수 있다.
+5. 충돌한 두 키를 각각 조회할 수 있고, 기존 키 갱신은 항목 수를 바꾸지
+   않는다.
+6. 없는 키 조회는 `None`이며, 빈 테이블 확인 결과에는 모든 버킷이 빈 상태로
+   나타난다.
+7. 상대 URL, 미지원 스킴, 호스트가 없는 URL은 단축 요청에서 거부한다.
+8. 동일 URL은 동일 코드를 재사용하며, 존재하지 않는 코드는 조회 시
+   `KeyError`를 발생시킨다.
