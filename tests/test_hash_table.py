@@ -16,6 +16,16 @@ class HashTableTests(unittest.TestCase):
         self.assertEqual(table.get(""), "empty")
         self.assertEqual(table.hash_details("")[0], 0)
 
+    def test_none_max_load_keeps_capacity_fixed(self):
+        table = HashTable(1, max_load=None)
+        for key in ("first", "second", "third"):
+            table.insert(key, key)
+
+        self.assertEqual(table.capacity, 1)
+        self.assertEqual(len(table), 3)
+        for key in ("first", "second", "third"):
+            self.assertEqual(table.get(key), key)
+
     def test_collisions_are_retrievable_and_updates_do_not_grow_table(self):
         table = HashTable(1)
         table.insert("first", "one")

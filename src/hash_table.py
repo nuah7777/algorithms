@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import math
 from typing import Any
 
 
@@ -13,10 +14,20 @@ class _Node:
 
 
 class HashTable:
-    def __init__(self, capacity: int = 10) -> None:
+    def __init__(
+        self, capacity: int = 10, *, max_load: float | None = 2
+    ) -> None:
         if isinstance(capacity, bool) or not isinstance(capacity, int) or capacity <= 0:
             raise ValueError("capacity must be a positive integer")
+        if max_load is not None and (
+            isinstance(max_load, bool)
+            or not isinstance(max_load, (int, float))
+            or not math.isfinite(max_load)
+            or max_load <= 0
+        ):
+            raise ValueError("max_load must be a positive finite number or None")
         self.capacity = capacity
+        self.max_load = max_load
         self._buckets: list[_Node | None] = [None] * capacity
         self._length = 0
 
@@ -49,7 +60,10 @@ class HashTable:
 
         self._buckets[index] = _Node(key, value, self._buckets[index])
         self._length += 1
-        if self._length > 2 * self.capacity:
+        while (
+            self.max_load is not None
+            and self._length / self.capacity > self.max_load
+        ):
             self._resize()
 
     def _resize(self) -> None:
