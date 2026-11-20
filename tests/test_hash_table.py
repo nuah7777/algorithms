@@ -5,8 +5,10 @@ from src.hash_table import HashTable
 
 class HashTableTests(unittest.TestCase):
     def test_rejects_zero_capacity(self):
-        with self.assertRaises(ValueError):
-            HashTable(0)
+        for capacity in (0, -1, 1.5, True):
+            with self.subTest(capacity=capacity):
+                with self.assertRaises(ValueError):
+                    HashTable(capacity)
 
     def test_capacity_one_and_empty_key(self):
         table = HashTable(1)

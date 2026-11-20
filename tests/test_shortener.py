@@ -10,6 +10,12 @@ class ShortenerTests(unittest.TestCase):
         self.assertEqual(code, "0")
         self.assertEqual(shortener.resolve(code), "https://example.com/path")
 
+    def test_accepts_http_url(self):
+        shortener = Shortener()
+        url = "http://example.com/path"
+        code = shortener.shorten(url)
+        self.assertEqual(shortener.resolve(code), url)
+
     def test_duplicate_url_reuses_code(self):
         shortener = Shortener()
         url = "https://example.com/"
