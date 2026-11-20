@@ -1,0 +1,42 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="560" viewBox="0 0 960 560">
+<style>text{font-family:Arial,sans-serif;fill:#222}.grid{stroke:#ddd;stroke-width:1}.axis{stroke:#333;stroke-width:1.5}.success{stroke:#1769aa;fill:none}.failure{stroke:#d35400;fill:none}.theory{stroke-dasharray:7 5;stroke-width:2}.measured{stroke-width:2.5}</style>
+<text x="480" y="32" text-anchor="middle" font-size="20">Separate-chaining search cost by load factor</text>
+<line class="grid" x1="82" y1="488.0" x2="930" y2="488.0"/>
+<text x="70" y="493.0" text-anchor="end">0</text>
+<line class="grid" x1="82" y1="404.4" x2="930" y2="404.4"/>
+<text x="70" y="409.4" text-anchor="end">1</text>
+<line class="grid" x1="82" y1="320.8" x2="930" y2="320.8"/>
+<text x="70" y="325.8" text-anchor="end">2</text>
+<line class="grid" x1="82" y1="237.2" x2="930" y2="237.2"/>
+<text x="70" y="242.2" text-anchor="end">3</text>
+<line class="grid" x1="82" y1="153.6" x2="930" y2="153.6"/>
+<text x="70" y="158.6" text-anchor="end">4</text>
+<line class="grid" x1="82" y1="70.0" x2="930" y2="70.0"/>
+<text x="70" y="75.0" text-anchor="end">5</text>
+<line class="grid" x1="82.0" y1="70" x2="82.0" y2="488"/>
+<text x="82.0" y="512" text-anchor="middle">0</text>
+<line class="grid" x1="294.0" y1="70" x2="294.0" y2="488"/>
+<text x="294.0" y="512" text-anchor="middle">1</text>
+<line class="grid" x1="506.0" y1="70" x2="506.0" y2="488"/>
+<text x="506.0" y="512" text-anchor="middle">2</text>
+<line class="grid" x1="718.0" y1="70" x2="718.0" y2="488"/>
+<text x="718.0" y="512" text-anchor="middle">3</text>
+<line class="grid" x1="930.0" y1="70" x2="930.0" y2="488"/>
+<text x="930.0" y="512" text-anchor="middle">4</text>
+<line class="axis" x1="82" y1="70" x2="82" y2="488"/>
+<line class="axis" x1="82" y1="488" x2="930" y2="488"/>
+<text x="506.0" y="540" text-anchor="middle">Load factor (α)</text>
+<text x="22" y="279.0" transform="rotate(-90 22 279.0)" text-anchor="middle">Average nodes compared</text>
+<polyline class="success measured" points="135.0,394.0 188.0,383.8 241.0,371.7 294.0,361.6 347.0,352.2 400.0,342.4 453.0,329.7 506.0,318.0 559.0,314.2 612.0,298.6 665.0,288.2 718.0,273.3 771.0,265.6 824.0,251.2 877.0,252.9 930.0,233.1"/>
+<line class="success measured" x1="95" y1="50" x2="123" y2="50"/>
+<text x="129" y="55" font-size="12">Success measured</text>
+<polyline class="success theory" points="135.0,394.0 188.0,383.5 241.0,373.0 294.0,362.6 347.0,352.2 400.0,341.7 453.0,331.2 506.0,320.8 559.0,310.4 612.0,299.9 665.0,289.4 718.0,279.0 771.0,268.6 824.0,258.1 877.0,247.6 930.0,237.2"/>
+<line class="success theory" x1="300" y1="50" x2="328" y2="50"/>
+<text x="334" y="55" font-size="12">Success theory: 1 + α/2</text>
+<polyline class="failure measured" points="135.0,467.9 188.0,448.0 241.0,428.1 294.0,407.0 347.0,385.9 400.0,359.1 453.0,340.6 506.0,314.8 559.0,294.5 612.0,282.1 665.0,261.2 718.0,230.8 771.0,213.4 824.0,195.7 877.0,170.1 930.0,146.9"/>
+<line class="failure measured" x1="505" y1="50" x2="533" y2="50"/>
+<text x="539" y="55" font-size="12">Failure measured</text>
+<polyline class="failure theory" points="135.0,467.1 188.0,446.2 241.0,425.3 294.0,404.4 347.0,383.5 400.0,362.6 453.0,341.7 506.0,320.8 559.0,299.9 612.0,279.0 665.0,258.1 718.0,237.2 771.0,216.3 824.0,195.4 877.0,174.5 930.0,153.6"/>
+<line class="failure theory" x1="710" y1="50" x2="738" y2="50"/>
+<text x="744" y="55" font-size="12">Failure theory: α</text>
+</svg>
