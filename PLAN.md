@@ -1,34 +1,35 @@
-# Implementation Plan
+# 구현 계획
 
-1. Read `SPEC.md` and translate its required boundary cases into tests before
-   implementing the hash table or shortener. Keep the tests unchanged after
-   the implementation begins; add any missed cases during this test-first
-   review.
-2. Implement the base62 helpers and a separate-chaining `HashTable` with
-   linked-list nodes, Horner hashing, collision-safe updates, lookup, and
-   immutable inspection output. Do not use `dict`, `set`, or built-in
-   `hash()`.
-3. Implement `Shortener` on the chaining table. Validate absolute HTTP(S)
-   URLs, assign sequential base62 codes, reuse a URL's existing code, and
-   report invalid or missing values explicitly.
-4. Run `make test` and fix implementation defects without changing tests.
-5. Add a load-factor experiment that uses the same keys and capacity for each
-   strategy, records measured search costs, compares them with theoretical
-   estimates, and writes a table and SVG graph.
-6. Add the web service and `/table` inspection view. Display table contents,
-   the Horner calculation, and the slots examined for a lookup. Keep network
-   exposure and hosted-port operations as explicit manual steps.
-7. Implement linear probing with the same public table operations. Test
-   wraparound, collisions, updates, and full-table errors, then let the
-   shortener select either strategy and run the shortener tests for both.
-8. Produce a concise report (no more than two PDF pages) with the experiment
-   setup, results, theory comparison, and interpretation.
+1. **명세를 테스트 사례로 구체화한다.** 구현 전에 SPEC.md의 경계 사례를
+   테스트로 옮긴다. base62의 0·다중 자리·잘못된 입력, 해시 테이블의 용량
+   검증·빈 키·충돌·갱신·없는 키, URL 검증·중복 단축·없는 코드 조회를
+   포함한다.
+2. **base62 변환을 준비한다.** 명세의 알파벳으로 음이 아닌 정수의
+   인코딩·디코딩을 제공하고, 0은 `"0"`으로 표현한다. 무효 입력은
+   명시적으로 거부한다.
+3. **개별 체이닝 해시 테이블을 구현한다.** 양의 초기 버킷 수를 받고,
+   연결 리스트로 충돌을 처리한다. 호너 계산 `h = (31 * h + ord(c)) %
+   capacity`를 구현하고, 삽입·갱신·조회·길이·버킷 검사와 계산 근거 확인
+   기능을 제공한다. 내장 `dict`, `set`, `hash()`는 사용하지 않는다.
+4. **테이블 확장을 구현하고 검증한다.** 원소 수가 버킷 수의 2배를 넘으면
+   버킷 수를 두 배로 늘리고 모든 항목을 새 용량으로 다시 해싱한다.
+   확장 전후에 항목과 값이 보존되는지, 충돌한 키도 정상 조회되는지
+   테스트한다.
+5. **URL 단축기와 역방향 조회를 구현한다.** URL→코드와 코드→URL 조회를
+   직접 구현한 개별 체이닝 테이블로 관리한다. HTTP(S) 절대 URL만 허용하고,
+   중복 URL에는 기존 코드를 돌려준다. 새 코드는 순차 정수를 base62로
+   인코딩해 발급하며 해시값을 코드로 사용하지 않는다.
+6. **테이블 확인 화면을 만든다.** `/table`에서 버킷별 항목과 체이닝 순서를
+   표시하고, 선택한 키의 호너 계산 단계·최종 버킷·조회 중 방문한 항목을
+   확인할 수 있게 한다.
+7. **통합 테스트를 실행한다.** `make test`로 base62, 해시 테이블, URL 단축
+   및 경계 사례를 확인한다. 실패가 있으면 테스트를 약화하지 않고 구현을
+   수정한 뒤 다시 실행한다.
 
-## Constraints
+## 구현 제약
 
-- Tests for specified boundary cases precede hash-table and shortener code.
-- Source code must not use `dict`, `set`, or Python's built-in `hash()`.
-- A short code comes from a sequential integer encoded as base62, never from
-  a hash value.
-- Do not alter tests to accommodate implementation behavior; repair the
-  implementation instead.
+- 테스트 사례를 구현보다 먼저 정리한다.
+- Python 내장 `dict`, `set`, `hash()`를 사용하지 않는다.
+- 충돌 해결은 개별 체이닝, 해시 계산은 명세의 호너 방식으로 한다.
+- 테이블 확장 시 기존 데이터를 보존하고 새 용량에 맞춰 재해싱한다.
+- 단축 코드는 순차 정수의 base62 인코딩으로만 생성한다.
