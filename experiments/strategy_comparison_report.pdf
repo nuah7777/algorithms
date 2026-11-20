@@ -1,0 +1,126 @@
+%PDF-1.4
+%‚„œ”
+1 0 obj
+<< /Type /Catalog /Pages 2 0 R >>
+endobj
+2 0 obj
+<< /Type /Pages /Kids [3 0 R 4 0 R] /Count 2 >>
+endobj
+3 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 5 0 R >> >> /Contents 6 0 R >>
+endobj
+4 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 5 0 R >> >> /Contents 7 0 R >>
+endobj
+5 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>
+endobj
+6 0 obj
+<< /Length 1262 >>
+stream
+BT
+/F1 16 Tf
+50 800 Td
+(Hash Table Search Cost Comparison) Tj
+/F1 8 Tf
+11 TL
+0 -26 Td
+(Capacity: 4093 slots; load factors 0.1 through 0.9.) Tj
+T*
+(Both tables use the same deterministic random URLs and insertion order.) Tj
+T*
+(Each load factor uses 1000 successful and 1000 unsuccessful queries.) Tj
+T*
+(Chaining counts stored nodes visited; probing counts slots checked,) Tj
+T*
+(including the terminating empty slot for an unsuccessful probe.) Tj
+T*
+(Theory: chaining S=1+alpha/2, U=alpha.) Tj
+T*
+(Linear probing S=0.5*\(1+1/\(1-alpha\)\),) Tj
+T*
+(U=0.5*\(1+1/\(1-alpha\)^2\). S=success; U=unsuccessful.) Tj
+T*
+(Measured/theory values:) Tj
+T*
+(alpha | Chain S m/t | Chain U m/t | Linear S m/t | Linear U m/t) Tj
+T*
+(0.1 | 1.05/1.05 | 0.10/0.10 | 1.04/1.06 | 1.11/1.12) Tj
+T*
+(0.2 | 1.11/1.10 | 0.20/0.20 | 1.14/1.13 | 1.31/1.28) Tj
+T*
+(0.3 | 1.15/1.15 | 0.31/0.30 | 1.23/1.21 | 1.55/1.52) Tj
+T*
+(0.4 | 1.20/1.20 | 0.39/0.40 | 1.32/1.33 | 1.91/1.89) Tj
+T*
+(0.5 | 1.25/1.25 | 0.52/0.50 | 1.60/1.50 | 2.65/2.50) Tj
+T*
+(0.6 | 1.30/1.30 | 0.60/0.60 | 1.68/1.75 | 3.80/3.63) Tj
+T*
+(0.7 | 1.37/1.35 | 0.74/0.70 | 2.15/2.17 | 6.27/6.05) Tj
+T*
+(0.8 | 1.39/1.40 | 0.81/0.80 | 2.78/3.00 | 12.01/12.99) Tj
+T*
+(0.9 | 1.43/1.45 | 0.86/0.90 | 4.73/5.50 | 54.26/50.57) Tj
+T*
+ET
+endstream
+endobj
+7 0 obj
+<< /Length 1111 >>
+stream
+BT
+/F1 16 Tf
+50 800 Td
+(Results and Interpretation) Tj
+/F1 8 Tf
+11 TL
+0 -26 Td
+(Findings and interpretation) Tj
+T*
+(At alpha=0.9, chaining success was 1.43 nodes, versus 1.45 expected.) Tj
+T*
+(At the same load, linear-probing failure was 54.26 slots, versus 50.57 expected.) Tj
+T*
+(The linear-probing unsuccessful-search estimate rises sharply near) Tj
+T*
+(full occupancy; its alpha=0.9 estimate is about 50.5 probes.) Tj
+T*
+(Chaining costs increase more gradually because added entries extend) Tj
+T*
+(bucket lists rather than creating long contiguous clusters.) Tj
+T*
+(Largest measured/theory deviations in the sampled runs:) Tj
+T*
+(Chaining success: alpha=0.9, measured=1.43, theory=1.45) Tj
+T*
+(Chaining failure: alpha=0.7, measured=0.74, theory=0.70) Tj
+T*
+(Linear success: alpha=0.9, measured=4.73, theory=5.50) Tj
+T*
+(Linear failure: alpha=0.9, measured=54.26, theory=50.57) Tj
+T*
+(Small differences are expected from finite random samples and the) Tj
+T*
+(Horner-hash distribution; both structures show the predicted trend.) Tj
+T*
+(Artifacts: strategy_comparison.csv and strategy_comparison.svg.) Tj
+T*
+ET
+endstream
+endobj
+xref
+0 8
+0000000000 65535 f
+0000000015 00000 n
+0000000064 00000 n
+0000000127 00000 n
+0000000253 00000 n
+0000000379 00000 n
+0000000449 00000 n
+0000001763 00000 n
+trailer
+<< /Size 8 /Root 1 0 R >>
+startxref
+2926
+%%EOF

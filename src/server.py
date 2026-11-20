@@ -77,6 +77,7 @@ def _render_table(shortener: Shortener) -> str:
         nodes = []
         for node_index, (url, code) in enumerate(entries):
             hash_index, steps = table.hash_details(url)
+            search_path = table.search_path(url)
             calculations = "".join(
                 "<li>"
                 f"h = (31 × {previous} + {codepoint}) mod {table.capacity} "
@@ -84,13 +85,21 @@ def _render_table(shortener: Shortener) -> str:
                 for character, codepoint, previous, value in steps
             )
             short_path = _short_path(code)
+            probe_details = ""
+            if shortener.table_kind == "linear":
+                visited_slots = " → ".join(f"칸 {index}" for index in search_path)
+                probe_details = f"<p>탐색한 칸: {visited_slots}</p>"
+                location_label = "시작 칸"
+            else:
+                location_label = "버킷"
             nodes.append(
                 '<article class="node">'
                 f'<div class="field"><strong>URL 키:</strong> <code>{escape(url)}</code></div>'
                 f'<div class="field"><strong>짧은 코드:</strong> <code>{escape(code)}</code></div>'
                 '<div class="field"><strong>짧은 링크:</strong> '
                 f'<a href="{escape(short_path, quote=True)}">{escape(short_path)}</a></div>'
-                f"<p>버킷 {hash_index}</p>"
+                f"<p>{location_label} {hash_index}</p>"
+                f"{probe_details}"
                 "<details><summary>호너 해시 계산 과정</summary>"
                 f"<ol>{calculations}</ol></details>"
                 "</article>"
@@ -105,7 +114,7 @@ def _render_table(shortener: Shortener) -> str:
         )
 
     content = (
-        "<h1>현재 해시 테이블</h1>"
+        f"<h1>현재 해시 테이블 ({escape(shortener.table_kind)})</h1>"
         f"<p>{len(table)}개 URL · {table.capacity}칸</p>"
         f'{"".join(buckets)}'
         '<p><a href="/">URL 단축하기</a></p>'

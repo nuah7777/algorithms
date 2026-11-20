@@ -4,14 +4,20 @@ from urllib.parse import urlsplit
 
 from src.base62 import encode
 from src.hash_table import HashTable
+from src.linear_probing_hash_table import LinearProbingHashTable
 
 
 class Shortener:
     def __init__(self, table_kind: str = "chaining", capacity: int = 10) -> None:
-        if table_kind != "chaining":
+        if table_kind == "chaining":
+            table_type = HashTable
+        elif table_kind == "linear":
+            table_type = LinearProbingHashTable
+        else:
             raise ValueError(f"unsupported table kind: {table_kind!r}")
-        self.url_to_code = HashTable(capacity)
-        self.code_to_url = HashTable(capacity)
+        self.table_kind = table_kind
+        self.url_to_code = table_type(capacity)
+        self.code_to_url = table_type(capacity)
         self.table = self.code_to_url
         self._capacity = capacity
         self._next_code = 0

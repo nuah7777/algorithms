@@ -48,6 +48,20 @@ class HashTable:
             steps.append((character, ord(character), previous, value))
         return value, tuple(steps)
 
+    def search_path(self, key: str) -> tuple[int, ...]:
+        index, _ = self.hash_details(key)
+        path = []
+        node = self._buckets[index]
+        while node is not None:
+            path.append(index)
+            if node.key == key:
+                break
+            node = node.next
+        return tuple(path)
+
+    def search_cost(self, key: str) -> int:
+        return len(self.search_path(key))
+
     def insert(self, key: str, value: Any) -> None:
         self._validate_key(key)
         index, _ = self.hash_details(key)
