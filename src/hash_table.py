@@ -49,6 +49,22 @@ class HashTable:
 
         self._buckets[index] = _Node(key, value, self._buckets[index])
         self._length += 1
+        if self._length > 2 * self.capacity:
+            self._resize()
+
+    def _resize(self) -> None:
+        old_buckets = self._buckets
+        self.capacity *= 2
+        self._buckets = [None] * self.capacity
+
+        for bucket in old_buckets:
+            node = bucket
+            while node is not None:
+                next_node = node.next
+                index, _ = self.hash_details(node.key)
+                node.next = self._buckets[index]
+                self._buckets[index] = node
+                node = next_node
 
     def get(self, key: str) -> Any | None:
         self._validate_key(key)
