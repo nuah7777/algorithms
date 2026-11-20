@@ -1,4 +1,7 @@
-.PHONY: test
+.PHONY: test serve
 
 test:
 	python3 -m unittest discover -s tests
+
+serve:
+	python3 -m src.server
