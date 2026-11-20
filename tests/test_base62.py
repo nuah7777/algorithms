@@ -8,7 +8,7 @@ class Base62Tests(unittest.TestCase):
         self.assertEqual(encode(0), "0")
 
     def test_round_trip(self):
-        for number in (1, 61, 62, 3844, 123456789):
+        for number in (0, 1, 61, 62, 3844, 123456789):
             with self.subTest(number=number):
                 self.assertEqual(decode(encode(number)), number)
 
@@ -19,6 +19,10 @@ class Base62Tests(unittest.TestCase):
     def test_decode_rejects_invalid_characters(self):
         with self.assertRaises(ValueError):
             decode("a!")
+
+    def test_decode_rejects_empty_string(self):
+        with self.assertRaises(ValueError):
+            decode("")
 
 
 if __name__ == "__main__":

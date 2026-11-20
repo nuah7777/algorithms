@@ -54,8 +54,8 @@ implementation (`"chaining"` or, when available, `"linear"`).
   encoded with base62; a hash value is never used as a code.
 - `resolve(code)` returns the original URL.
 - Invalid URLs raise `ValueError`; an unknown code raises `KeyError`.
-- Exhausting a bounded table raises `OverflowError` rather than silently
-  replacing an entry.
+- The shortener accepts at most `capacity` distinct URLs and raises
+  `OverflowError` when full rather than silently replacing an entry.
 
 ## 5. Inspection page and experiments
 
