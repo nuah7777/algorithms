@@ -10,7 +10,9 @@ class Shortener:
     def __init__(self, table_kind: str = "chaining", capacity: int = 10) -> None:
         if table_kind != "chaining":
             raise ValueError(f"unsupported table kind: {table_kind!r}")
-        self.table = HashTable(capacity)
+        self._url_to_code = HashTable(capacity)
+        self.code_to_url = HashTable(capacity)
+        self.table = self.code_to_url
         self._capacity = capacity
         self._next_code = 0
 
@@ -29,20 +31,20 @@ class Shortener:
 
     def shorten(self, url: str) -> str:
         self._validate_url(url)
-        for slot in self.table.inspect():
-            for code, stored_url in slot:
-                if stored_url == url:
-                    return code
+        existing_code = self._url_to_code.get(url)
+        if existing_code is not None:
+            return existing_code
 
-        if len(self.table) >= self._capacity:
+        if len(self.code_to_url) >= self._capacity:
             raise OverflowError("shortener capacity is full")
         code = encode(self._next_code)
+        self._url_to_code.insert(url, code)
+        self.code_to_url.insert(code, url)
         self._next_code += 1
-        self.table.insert(code, url)
         return code
 
     def resolve(self, code: str) -> str:
-        url = self.table.get(code)
+        url = self.code_to_url.get(code)
         if url is None:
             raise KeyError(code)
         return url
